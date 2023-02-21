@@ -1,8 +1,23 @@
+version: '3.1'
+
 services:
-  flask:
+  app:
     build: .
-    container_name: flask
     ports:
       - "5000:5000"
     volumes:
-      - .:/code
+      - .:/app
+    depends_on:
+      - db
+  db:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+    ports:
+      - '5432:5432'
+    volumes:
+      - .pgdata:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
